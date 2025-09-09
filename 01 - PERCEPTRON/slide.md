@@ -5,9 +5,6 @@ author: Kheven
 date: 2025
 options:
   end_slide_shorthand: true
-theme:
-  #   name: catppuccin-mocha
-  name: catppuccin-latte
 ---
 
 # Perceptron Multicamadas para Aproximação de Funções

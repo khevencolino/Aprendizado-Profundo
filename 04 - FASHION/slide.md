@@ -5,8 +5,6 @@ author: Kheven
 date: 2025
 options:
   end_slide_shorthand: true
-theme:
-  name: catppuccin-latte
 ---
 
 # Autoencoders para Fashion-MNIST

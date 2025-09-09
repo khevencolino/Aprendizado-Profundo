@@ -6,7 +6,7 @@ date: 2025
 options:
   end_slide_shorthand: true
 theme:
-  name: gruvbox-dark
+  name: catppuccin-latte
 ---
 
 # Predição de Sobrevivência no Titanic
@@ -17,7 +17,7 @@ theme:
 
 ## Objetivo
 
-🎯 **Prever a sobrevivência de passageiros do Titanic usando redes neurais**
+**Prever a sobrevivência de passageiros do Titanic usando redes neurais**
 
 - **Problema**: Classificação binária (sobreviveu/não sobreviveu)
 - **Dataset**: Dados históricos de passageiros
@@ -28,7 +28,7 @@ theme:
 
 ## O Desastre do Titanic
 
-🚢 **Contexto histórico:**
+**Contexto histórico:**
 
 ### O que aconteceu:
 
@@ -47,7 +47,7 @@ theme:
 
 ## Dataset e Análise Exploratória
 
-📊 **Características dos dados:**
+**Características dos dados:**
 
 - **891 passageiros** no conjunto de treino
 - **418 passageiros** no conjunto de teste
@@ -74,7 +74,7 @@ print(f"Taxa de Sobrevivência: {train_df['Survived'].mean():.2%}")
 
 ## Análise de Valores Ausentes
 
-🔍 **Tratamento de dados faltantes:**
+**Tratamento de dados faltantes:**
 
 | Variável     | Valores Ausentes | Estratégia                 |
 | ------------ | ---------------- | -------------------------- |
@@ -117,7 +117,7 @@ df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
 
 ![](output2.png)
 
-📈 **Correlações principais com sobrevivência:**
+**Correlações principais com sobrevivência:**
 
 | Variável        | Correlação | Interpretação                         |
 | --------------- | ---------- | ------------------------------------- |
@@ -136,7 +136,7 @@ target_correlation = correlation_df['Survived'].sort_values(key=abs, ascending=F
 
 ## Feature Engineering
 
-🛠️ **Criação de novas variáveis:**
+**Criação de novas variáveis:**
 
 ### 1. Tamanho da Família:
 
@@ -168,7 +168,7 @@ df['FareGroup'] = pd.qcut(df['Fare'], 4, labels=['Low', 'Medium', 'High', 'VeryH
 
 ## Codificação de Variáveis
 
-🔢 **Transformação categórica → numérica:**
+**Transformação categórica → numérica:**
 
 ```python
 def encode_categorical_variables(train_df, test_df):
@@ -185,7 +185,7 @@ def encode_categorical_variables(train_df, test_df):
 
 ### Resultado:
 
-- **29 features** finais após codificação
+- **10 features** finais após codificação
 - **Consistência** entre treino e teste
 - **Escalabilidade** para novos dados
 
@@ -193,7 +193,7 @@ def encode_categorical_variables(train_df, test_df):
 
 ## Normalização dos Dados
 
-📏 **Padronização para redes neurais:**
+**Padronização para redes neurais:**
 
 ```python
 # Separação e normalização
@@ -219,15 +219,14 @@ X_val_scaled = scaler.transform(X_val)
 
 ## Arquitetura do Modelo MLP
 
-🏗️ **Rede neural com regularização:**
+**Rede neural com regularização:**
 
 ```python
 model = Sequential([
-    Input(shape=(29,)),                    # 29 features de entrada
-    Dense(100, activation='relu'),         # Camada oculta 1
+    Input(shape=(10,)),                    # 10 features de entrada
+    Dense(64, activation='relu'),          # Camada oculta 1
     Dropout(0.3),                         # Regularização
-    Dense(50, activation='relu'),          # Camada oculta 2
-    Dropout(0.2),                         # Regularização
+    Dense(32, activation='relu'),          # Camada oculta 2
     Dense(1, activation='sigmoid')         # Saída binária
 ])
 
@@ -240,7 +239,7 @@ model.compile(
 
 ### Especificações:
 
-- **7.851 parâmetros** treináveis
+- **2.817 parâmetros** treináveis
 - **ReLU** para camadas ocultas
 - **Sigmoid** para probabilidade de sobrevivência
 - **Dropout** para prevenir overfitting
@@ -249,7 +248,7 @@ model.compile(
 
 ## Configuração do Treinamento
 
-⚙️ **Callbacks inteligentes:**
+**Callbacks inteligentes:**
 
 ```python
 # Callbacks para otimização automática
@@ -282,7 +281,7 @@ history = model.fit(
 
 ![image:width:80%](output3.png)
 
-📈 **Análise do treinamento:**
+**Análise do treinamento:**
 
 - **Convergência estável** sem oscilações bruscas
 - **Sem overfitting significativo** (gap treino-validação pequeno)
@@ -291,22 +290,23 @@ history = model.fit(
 
 **Estatísticas típicas:**
 
-- Loss final: ~0.45
-- Accuracy final: ~82-85%
-- Melhor época: 35-40
+- Loss final: ~0.44
+- Accuracy final: ~82%
+- Melhor época: 31
+- Early stopping ativado
 
 ---
 
 ## Resultados Principais
 
-🏆 **Métricas de performance:**
+**Métricas de performance:**
 
-| Métrica      | Valor  | Interpretação                  |
-| ------------ | ------ | ------------------------------ |
-| **Accuracy** | 83-85% | Boa classificação geral        |
-| **Precisão** | 0.82   | Poucos falsos positivos        |
-| **Recall**   | 0.78   | Detecta bem sobreviventes      |
-| **F1-Score** | 0.80   | Balanceamento precision/recall |
+| Métrica      | Valor | Interpretação                  |
+| ------------ | ----- | ------------------------------ |
+| **Accuracy** | 82.1% | Boa classificação geral        |
+| **Precisão** | 0.82  | Poucos falsos positivos        |
+| **Recall**   | 0.78  | Detecta bem sobreviventes      |
+| **F1-Score** | 0.80  | Balanceamento precision/recall |
 
 ```python
 # Avaliação final
@@ -360,15 +360,15 @@ print(f"Desvio padrão: {y_pred_proba.std():.3f}")
 
 ![image:width:70%](output6.png)
 
-🎯 **Features mais determinantes:**
+**Features mais determinantes:**
 
-| Rank | Feature        | Importância | Interpretação                       |
-| ---- | -------------- | ----------- | ----------------------------------- |
-| 1    | **Sex_female** | 0.145       | Ser mulher aumenta muito as chances |
-| 2    | **Pclass**     | 0.089       | Classe social é crucial             |
-| 3    | **Fare**       | 0.067       | Tarifa reflete status               |
-| 4    | **Age**        | 0.054       | Idade influencia sobrevivência      |
-| 5    | **FamilySize** | 0.043       | Tamanho da família importa          |
+| Rank | Feature        | Importância | Interpretação                          |
+| ---- | -------------- | ----------- | -------------------------------------- |
+| 1    | **Pclass**     | 0.122       | Classe social é crucial                |
+| 2    | **Sex_female** | 0.102       | Sexo feminino aumenta muito as chances |
+| 3    | **SibSp**      | 0.040       | Número de irmãos/cônjuges              |
+| 4    | **Age**        | 0.039       | Idade influencia sobrevivência         |
+| 5    | **Sex_male**   | 0.037       | Ser homem diminui as chances           |
 
 ```python
 # Cálculo da importância
@@ -381,7 +381,7 @@ perm_importance = permutation_importance(
 
 ## Predições no Conjunto de Teste
 
-📊 **Resultados finais:**
+**Resultados finais:**
 
 ```python
 # Predições finais
@@ -396,14 +396,14 @@ print(f"Taxa de sobrevivência predita: {survival_rate_predicted:.1%}")
 ### Comparação histórica:
 
 - **Taxa original**: 38.4%
-- **Taxa predita**: ~35-40%
-- **Alinhamento**: Excelente com dados históricos
+- **Taxa predita**: 39.7%
+- **Alinhamento**: Excelente (diferença de apenas 1.3%)
 
 ---
 
 ## Principais Aprendizados
 
-🎓 **Insights técnicos:**
+**Insights técnicos:**
 
 ### Sobre Regularização:
 
@@ -413,15 +413,16 @@ print(f"Taxa de sobrevivência predita: {survival_rate_predicted:.1%}")
 
 ### Sobre os Dados:
 
-- **Sexo** foi o fator mais determinante
-- **Classe social** teve impacto forte na sobrevivência
+- **Pclass** foi o fator mais determinante
+- **Sexo** teve impacto forte na sobrevivência
+- **SibSp** (irmãos/cônjuges) também influenciou significativamente
 - **Protocolo "mulheres e crianças primeiro"** é visível nos dados
 
 ---
 
 ## Limitações e Desafios
 
-⚠️ **Pontos de atenção:**
+**Pontos de atenção:**
 
 ### Limitações dos dados:
 
@@ -437,22 +438,6 @@ print(f"Taxa de sobrevivência predita: {survival_rate_predicted:.1%}")
 ### Considerações éticas:
 
 - **Viés histórico**: Modelo reflete desigualdades de 1912
-
----
-
-## Conclusões
-
-✅ **Objetivos alcançados:**
-
-- 🎯 **Predição eficaz** de sobrevivência (83-85% accuracy)
-- 🧠 **MLP capturou** interações não-lineares entre variáveis
-- 📊 **Análise interpretável** dos fatores de sobrevivência
-
-### Impacto:
-
-- **Demonstração prática** de classificação com dados reais
-- **Pipeline completo** de pré-processamento e modelagem
-- **Base metodológica** para problemas similares
 
 ---
 

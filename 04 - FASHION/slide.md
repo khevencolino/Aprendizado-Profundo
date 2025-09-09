@@ -6,7 +6,7 @@ date: 2025
 options:
   end_slide_shorthand: true
 theme:
-  name: gruvbox-dark
+  name: catppuccin-latte
 ---
 
 # Autoencoders para Fashion-MNIST
@@ -17,7 +17,7 @@ theme:
 
 ## Objetivo
 
-🎯 **Implementar dois tipos de Autoencoders para processamento de imagens**
+**Implementar dois tipos de Autoencoders para processamento de imagens**
 
 - **Autoencoder Convolucional**: Compressão e reconstrução de imagens
 - **Denoising Autoencoder**: Remoção de ruído gaussiano
@@ -28,7 +28,7 @@ theme:
 
 ## O que são Autoencoders?
 
-🧠 **Arquitetura de rede neural não-supervisionada**
+**Arquitetura de rede neural não-supervisionada**
 
 ```
 Input → [Encoder] → Latent Space → [Decoder] → Output
@@ -46,7 +46,7 @@ Input → [Encoder] → Latent Space → [Decoder] → Output
 
 ## Dataset Fashion-MNIST
 
-📊 **Características dos dados:**
+**Características dos dados:**
 
 - **70.000 imagens**: 60.000 treino + 10.000 teste
 - **Resolução**: 28×28 pixels (escala de cinza)
@@ -79,7 +79,7 @@ x_train_reshaped = x_train.reshape(x_train.shape[0], 28, 28, 1)
 
 ## Autoencoder Convolucional - Arquitetura
 
-🏗️ **Estrutura hierárquica com convoluções:**
+**Estrutura hierárquica com convoluções:**
 
 ### Encoder (Compressão):
 
@@ -106,7 +106,7 @@ Conv2D(1, (3,3), sigmoid)                      # 32×32 → 28×28
 
 ## Treinamento do Autoencoder
 
-⚙️ **Configuração do treinamento:**
+**Configuração do treinamento:**
 
 ```python
 # Compilação
@@ -131,7 +131,7 @@ history = autoencoder_conv.fit(
 
 ![image:width:80%](output2.png)
 
-📈 **Análise do treinamento:**
+**Análise do treinamento:**
 
 - Convergência estável do MSE e MAE
 - Sem overfitting significativo
@@ -143,7 +143,7 @@ history = autoencoder_conv.fit(
 
 ![image:width:80%](output3.png)
 
-📊 **Métricas de performance:**
+**Métricas de performance:**
 
 - **MSE médio**: ~0.005-0.010
 - **Qualidade visual**: Boa preservação de detalhes principais
@@ -153,7 +153,7 @@ history = autoencoder_conv.fit(
 
 ## Denoising Autoencoder - Conceito
 
-🔧 **Extensão para remoção de ruído:**
+**Extensão para remoção de ruído:**
 
 ### Processo:
 
@@ -187,7 +187,7 @@ x_train_noisy = add_noise(x_train_reshaped, 0.3)
 
 ## Denoising Autoencoder - Arquitetura
 
-🏗️ **Arquitetura aprimorada com regularização:**
+**Arquitetura aprimorada com regularização:**
 
 ```python
 # Encoder robusto com Dropout
@@ -208,7 +208,7 @@ Conv2D(1, (3,3), sigmoid)                        # 32×32 → 28×28
 
 ## Treinamento do Denoising Autoencoder
 
-⚙️ **Configuração específica para denoising:**
+**Configuração específica para denoising:**
 
 ```python
 # Treinamento: Entrada com ruído → Saída limpa
@@ -228,7 +228,7 @@ history_denoising = denoising_autoencoder_conv.fit(
 
 ![image:width:80%](output5.png)
 
-📈 **Observações:**
+**Observações:**
 
 - Convergência mais lenta devido à complexidade da tarefa
 - Maior número de épocas necessárias
@@ -240,7 +240,7 @@ history_denoising = denoising_autoencoder_conv.fit(
 
 ![image:width:80%](output6.png)
 
-📊 **Métricas de performance:**
+**Métricas de performance:**
 
 - **MSE (ruído vs original)**: ~0.090
 - **MSE (denoised vs original)**: ~0.015
@@ -251,7 +251,7 @@ history_denoising = denoising_autoencoder_conv.fit(
 
 ## Comparação dos Modelos
 
-📊 **Métricas comparativas:**
+**Métricas comparativas:**
 
 | Modelo                    | MSE em Imagens Limpas | Parâmetros | Especialidade    |
 | ------------------------- | --------------------- | ---------- | ---------------- |
@@ -260,8 +260,8 @@ history_denoising = denoising_autoencoder_conv.fit(
 
 ### Vantagens das Convoluções:
 
-- ✅ **Preservação espacial** da estrutura das imagens
-- ✅ **Upsampling/Downsampling gradual** preserva detalhes
+- **Preservação espacial** da estrutura das imagens
+- **Upsampling/Downsampling gradual** preserva detalhes
 
 ---
 
@@ -279,7 +279,7 @@ history_denoising = denoising_autoencoder_conv.fit(
 
 ## Detalhes Técnicos
 
-🔧 **Especificações importantes:**
+**Especificações importantes:**
 
 ### Compressão:
 
@@ -296,42 +296,8 @@ history_denoising = denoising_autoencoder_conv.fit(
 
 ---
 
-## Principais Aprendizados
-
-🎓 **Insights técnicos:**
-
-### Arquitetura:
-
-- **Convoluções** são superiores a MLPs para imagens
-- **Downsampling/Upsampling gradual** preserva informação
-- **Dropout** melhora robustez contra ruído
-
-### Treinamento:
-
-- **Early stopping** previne overfitting
-- **Learning rate scheduling** melhora convergência
-- **MSE** é adequado para reconstrução de imagens
-
-### Performance:
-
-- **Denoising** requer mais épocas que autoencoding básico
-- **Trade-off** entre compressão e qualidade de reconstrução
-
----
-
-## Conclusões
-
-✅ **Objetivos alcançados:**
-
-- 🎯 **Autoencoders implementados** com sucesso
-- 📈 **Compressão eficaz** mantendo qualidade visual
-- 🔧 **Denoising robusto** com 83% de melhoria
-- 🏗️ **Arquiteturas convolucionais** otimizadas
-
----
-
 # Obrigado!
 
-🚀 **Próximo projeto:** Análise de Sentimentos com LSTM
+**Próximo projeto:** Análise de Sentimentos com LSTM
 
 ---

@@ -6,7 +6,8 @@ date: 2025
 options:
   end_slide_shorthand: true
 theme:
-  name: gruvbox-dark
+  #   name: catppuccin-mocha
+  name: catppuccin-latte
 ---
 
 # Perceptron Multicamadas para Aproximação de Funções
@@ -17,18 +18,18 @@ theme:
 
 ## Objetivo
 
-🎯 **Demonstrar a capacidade de aproximação universal das redes neurais**
+**Demonstrar a capacidade de aproximação universal das redes neurais**
 
 - **Função A**: f(x) = sin(2x) + cos(3x) (trigonométrica)
 - **Função B**: f(x) = 10x⁵ + 5x⁴ + 2x³ - 0.5x² + 3x + 2 (polinomial)
 - **Arquitetura**: Perceptron Multicamadas (MLP)
-- **Framework**: Keras com arquiteturas otimizadas
+- **Framework**: Keras
 
 ---
 
 ## Teorema da Aproximação Universal
 
-🧠 **Fundamento teórico:**
+**Fundamento teórico:**
 
 ### O que diz o teorema:
 
@@ -50,7 +51,7 @@ theme:
 
 ## Funções Target
 
-📐 **Duas funções com características distintas:**
+**Duas funções com características distintas:**
 
 ### Função A - Trigonométrica:
 
@@ -78,7 +79,7 @@ def function_b(x):
 
 ## Geração dos Dados
 
-📊 **Estratégia de amostragem:**
+**Estratégia de amostragem:**
 
 ```python
 def generate_dataset(func, x_min=0, x_max=5, n_samples=4000):
@@ -102,7 +103,7 @@ X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5)
 
 ## Pré-processamento
 
-🔧 **Tratamento diferenciado por função:**
+**Tratamento diferenciado por função:**
 
 ### Função A (Trigonométrica):
 
@@ -126,7 +127,7 @@ y_train_b_scaled = scaler_y_b.fit_transform(y_train_b.reshape(-1, 1))
 
 ## Arquitetura dos Modelos
 
-🏗️ **MLPs otimizados para cada função:**
+**MLPs otimizados para cada função:**
 
 ### Modelo A (Função Trigonométrica):
 
@@ -155,7 +156,7 @@ model_b = Sequential([
 
 ## Detalhes da Arquitetura
 
-📐 **Especificações técnicas:**
+**Especificações técnicas:**
 
 | Aspecto             | Modelo A | Modelo B     |
 | ------------------- | -------- | ------------ |
@@ -180,7 +181,7 @@ model_b = Sequential([
 
 ## Configuração do Treinamento
 
-⚙️ **Otimização:**
+**Otimização:**
 
 ```python
 # Compilação
@@ -210,7 +211,7 @@ history = model.fit(
 
 ## Resultados - Função A (Trigonométrica)
 
-🏆 **Métricas de performance:**
+**Métricas de performance:**
 
 | Métrica    | Valor    | Interpretação                 |
 | ---------- | -------- | ----------------------------- |
@@ -229,7 +230,7 @@ history = model.fit(
 
 ## Resultados - Função B (Polinomial)
 
-🏆 **Métricas de performance:**
+**Métricas de performance:**
 
 | Métrica    | Valor    | Interpretação                  |
 | ---------- | -------- | ------------------------------ |
@@ -277,7 +278,7 @@ history = model.fit(
 
 ## Comparação dos Modelos
 
-📊 **Análise comparativa:**
+**Análise comparativa:**
 
 | Aspecto           | Função A       | Função B    |
 | ----------------- | -------------- | ----------- |
@@ -299,7 +300,7 @@ history = model.fit(
 
 ## Principais Aprendizados
 
-🎓 **Insights técnicos:**
+**Insights técnicos:**
 
 ### Sobre Aproximação Universal:
 
@@ -323,7 +324,7 @@ history = model.fit(
 
 ## Limitações e Desafios
 
-⚠️ **Pontos de atenção:**
+**Pontos de atenção:**
 
 ### Limitações teóricas:
 
@@ -344,15 +345,6 @@ history = model.fit(
 - **Memória** limitada para arquiteturas muito grandes
 
 ---
-
-## Conclusões
-
-✅ **Objetivos alcançados:**
-
-- 🎯 **Demonstração prática** do Teorema da Aproximação Universal
-- 📈 **Aproximação excelente** (R² > 99.7%) para ambas as funções
-- 🏗️ **Arquiteturas otimizadas** para diferentes tipos de função
-- 🤖 **Automação inteligente** do processo de treinamento
 
 # Obrigado!
 

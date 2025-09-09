@@ -1,55 +1,38 @@
 ---
-title: Análise de Sentimentos com LSTM
-sub_title: Processamento de Linguagem Natural para Tweets usando Redes Recorrentes
+title: Análise de Sentimentos com GRU
+sub_title: Processamento de Linguagem Natural para Tweets usando Embeddings Pré-treinados
 author: Kheven
 date: 2025
 options:
   end_slide_shorthand: true
 theme:
-  name: gruvbox-dark
+  name: catppuccin-latte
 ---
 
-# Análise de Sentimentos com LSTM
+# Análise de Sentimentos com GRU
 
-## Processamento de Linguagem Natural para Tweets usando Redes Recorrentes
+## Processamento de Linguagem Natural para Tweets usando Embeddings Pré-treinados
 
 ---
 
 ## Objetivo
 
-🎯 **Classificar sentimentos em tweets usando Redes Neurais Recorrentes**
+**Classificar sentimentos em tweets usando GRU Bidirecional**
 
 - **Tarefa**: Análise de sentimentos binária (positivo/negativo)
-- **Dataset**: 1.6M tweets do Twitter (amostra de 50k)
-- **Arquitetura**: LSTM Bidirecional com Embeddings
-- **Framework**: Keras
-
----
-
-## Por que LSTM para Análise de Sentimentos?
-
-🧠 **Vantagens das Redes Recorrentes para texto:**
-
-### Problemas com MLPs tradicionais:
-
-- **Ordem das palavras** importa: "não gostei" ≠ "gostei muito"
-- **Dependências sequenciais**: contexto e significado
-- **Tamanho variável** dos textos
-
-### Solução LSTM:
-
-- **Memória de longo prazo**: lembra contexto anterior
-- **Processamento sequencial**: palavra por palavra
-- **Bidirectional**: analisa texto em ambas as direções
+- **Dataset**: 1.6M tweets do Twitter (amostra de 100k)
+- **Arquitetura**: GRU Bidirecional com Embeddings GloVe
+- **Framework**: Keras/TensorFlow
+- **Estratégia**: Fine-tuning em duas fases
 
 ---
 
 ## Dataset de Tweets
 
-📊 **Características dos dados:**
+**Características dos dados:**
 
 - **1.6 milhões de tweets** originalmente
-- **Amostra balanceada**: 25k positivos + 25k negativos
+- **Amostra balanceada**: 50k positivos + 50k negativos
 - **Classes**: 0 (negativo) e 4 (positivo) → convertido para 0/1
 - **Idioma**: Inglês (textos informais de redes sociais)
 
@@ -59,8 +42,8 @@ df_full = pd.read_csv('DATA/data.csv', encoding='latin-1', header=None)
 df_full.columns = ['sentiment', 'id', 'date', 'query', 'user', 'text']
 
 # Amostragem balanceada
-df_negative = df_full[df_full['sentiment'] == 0].sample(n=25000)
-df_positive = df_full[df_full['sentiment'] == 4].sample(n=25000)
+df_negative = df_full[df_full['sentiment'] == 0].sample(n=50000)
+df_positive = df_full[df_full['sentiment'] == 4].sample(n=50000)
 df = pd.concat([df_negative, df_positive])
 ```
 
@@ -88,54 +71,63 @@ def preprocess_text(text):
 
 ---
 
-## Tokenização e Sequências
+## Tokenização e Embeddings
 
-📝 **Conversão texto → números:**
+**Conversão texto → vetores numéricos:**
 
 ```python
 # Parâmetros
-MAX_VOCAB_SIZE = 20000      # Vocabulário máximo
+MAX_VOCAB_SIZE = 40000      # Vocabulário expandido
 MAX_SEQUENCE_LENGTH = 70    # Tamanho fixo das sequências
-EMBEDDING_DIM = 100         # Dimensão dos embeddings
+EMBEDDING_DIM = 100         # Dimensão dos embeddings GloVe
 
 # Tokenização
 tokenizer = Tokenizer(num_words=MAX_VOCAB_SIZE, oov_token="<OOV>")
 tokenizer.fit_on_texts(X_train)
 
-# Conversão para sequências
+# Conversão para sequências com padding
 X_train_seq = tokenizer.texts_to_sequences(X_train)
 X_train_pad = pad_sequences(X_train_seq, maxlen=MAX_SEQUENCE_LENGTH)
 ```
 
-### Processo:
+### Embeddings GloVe:
 
-1. **"i love this movie"** → **[15, 243, 89, 156]**
-2. **Padding**: **[15, 243, 89, 156, 0, 0, ..., 0]** (até 70 tokens)
+- **Pré-treinados**: 6B tokens, 100 dimensões
+- **Vantagem**: Conhecimento semântico transferido
+- **Estratégia**: Fine-tuning em duas fases
 
 ---
 
-## Arquitetura do Modelo LSTM
+## Arquitetura do Modelo GRU
 
-🏗️ **Estrutura da rede neural:**
+**Estrutura da rede neural:**
 
 ```python
 model = Sequential([
-    # Camada de Embedding
+    # Embeddings GloVe pré-treinados
     Embedding(
-        input_dim=20000,      # Vocabulário
-        output_dim=100,       # Dimensão do embedding
-        input_length=70       # Tamanho da sequência
+        input_dim=vocab_size,
+        output_dim=100,
+        weights=[embedding_matrix],
+        trainable=False  # Inicialmente congelado
     ),
 
-    # LSTM Bidirecional
-    Bidirectional(LSTM(128, dropout=0.5, recurrent_dropout=0.5)),
+    # Primeira camada GRU bidirecional
+    Bidirectional(GRU(128, dropout=0.3, return_sequences=True)),
 
-    # Camadas densas
+    # Segunda camada GRU bidirecional
+    Bidirectional(GRU(64, return_sequences=True)),
+
+    # Global Average Pooling
+    GlobalAveragePooling1D(),
+
+    # Camadas de classificação
     Dense(64, activation='relu'),
-    Dropout(0.5),
+    BatchNormalization(),
+    Dropout(0.3),
 
     # Saída
-    Dense(1, activation='sigmoid')  # Classificação binária
+    Dense(1, activation='sigmoid')
 ])
 ```
 
@@ -143,89 +135,110 @@ model = Sequential([
 
 ## Detalhes da Arquitetura
 
-📐 **Componentes principais:**
+**Componentes principais:**
 
-| Camada                 | Parâmetros | Função                           |
-| ---------------------- | ---------- | -------------------------------- |
-| **Embedding**          | 2M         | Converte tokens → vetores densos |
-| **Bidirectional LSTM** | 165K       | Processa sequência (→ + ←)       |
-| **Dense (64)**         | 16K        | Extração de features             |
-| **Dropout**            | -          | Regularização (50%)              |
-| **Dense (1)**          | 65         | Classificação final              |
+| Camada                     | Função                              |
+| -------------------------- | ----------------------------------- |
+| **Embedding (GloVe)**      | Converte tokens → vetores densos    |
+| **Bidirectional GRU 1**    | 128 unidades, return_sequences=True |
+| **Bidirectional GRU 2**    | 64 unidades, return_sequences=True  |
+| **GlobalAveragePooling1D** | Agrega informação da sequência      |
+| **Dense + BatchNorm**      | 64 neurônios + normalização         |
+| **Dropout**                | Regularização (30%)                 |
+| **Dense (1)**              | Classificação final                 |
 
-**Total**: ~2.2M parâmetros treináveis
+### Vantagens da Arquitetura:
 
-### Bidirectional LSTM:
-
-- **Forward**: lê da esquerda para direita
-- **Backward**: lê da direita para esquerda
-- **Concatena** ambas as representações
+- **Duas camadas GRU**: Maior capacidade de abstração
+- **GlobalAveragePooling**: Melhor que concatenação simples
+- **BatchNormalization**: Estabiliza treinamento
+- **L2 Regularization**: Previne overfitting
 
 ---
 
-## Configuração do Treinamento
+## Estratégia de Fine-tuning
 
-⚙️ **Hiperparâmetros e callbacks:**
+**Treinamento em duas fases:**
+
+### Fase 1: Embeddings Congelados (10 épocas)
 
 ```python
-# Compilação
-model.compile(
-    optimizer=Adam(learning_rate=0.01),
-    loss='binary_crossentropy',
-    metrics=['accuracy']
-)
+# Embeddings congelados
+model.layers[0].trainable = False
+model.compile(optimizer=Adam(lr=0.001))
 
-# Callbacks inteligentes
-callbacks = [
-    EarlyStopping(monitor='val_loss', patience=5),
-    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3),
-    ModelCheckpoint(save_weights_only=True)
-]
-
-# Treinamento
-history = model.fit(
+history_phase1 = model.fit(
     X_train_pad, y_train,
-    batch_size=128, epochs=10,
-    validation_split=0.2,
-    callbacks=callbacks
+    epochs=10, validation_split=0.2,
+    callbacks=[EarlyStopping, ReduceLROnPlateau]
 )
 ```
+
+### Fase 2: Fine-tuning (5 épocas)
+
+```python
+# Descongelar embeddings
+model.layers[0].trainable = True
+model.compile(optimizer=Adam(lr=0.0001))  # LR reduzido
+
+history_phase2 = model.fit(...)
+```
+
+**Por que duas fases?**
+
+- Permite que o modelo aprenda com embeddings estáveis primeiro
+- Fine-tuning refina os embeddings para o domínio específico
 
 ---
 
 ## Curvas de Treinamento
 
-📈 **Análise do treinamento:**
+**Análise do treinamento em duas fases:**
 
-- Convergência estável sem overfitting
-- Early stopping otimizou número de épocas
-- Learning rate reduction melhorou convergência final
+![image:width:80%](output.png)
 
-**Estatísticas:**
+**Observações:**
 
-- Épocas executadas: 7-10
-- Loss final: ~0.35
-- Accuracy final: ~85%
+- **Fase 1**: Convergência rápida com embeddings congelados
+- **Fase 2**: Fine-tuning melhora performance gradualmente
+- **Early Stopping**: Evita overfitting automaticamente
+- **Learning Rate Reduction**: Otimização refinada
+
+### Estatísticas Finais:
+
+- **Épocas totais**: ~15 épocas
+- **Melhor accuracy de validação**: Alcançada na fase 2
+- **Estratégia eficaz**: Fine-tuning melhorou os resultados
 
 ---
 
 ## Resultados Principais
 
-🏆 **Métricas de performance:**
+**Métricas de performance:**
 
-| Métrica      | Valor  | Interpretação                     |
-| ------------ | ------ | --------------------------------- |
-| **Accuracy** | 83-85% | Boa classificação geral           |
-| **Precisão** | 0.84   | Poucos falsos positivos           |
-| **Recall**   | 0.85   | Detecta bem sentimentos positivos |
-| **F1-Score** | 0.84   | Balanceamento precisão/recall     |
+| Métrica      | Valor | Interpretação                 |
+| ------------ | ----- | ----------------------------- |
+| **Accuracy** | ~80%  | Boa classificação geral       |
+| **Precisão** | ~0.78 | Controla falsos positivos     |
+| **Recall**   | ~0.71 | Detecta sentimentos positivos |
+| **F1-Score** | ~0.75 | Balanceamento adequado        |
 
 ```python
 # Avaliação no teste
 y_pred_proba = model.predict(X_test_pad)
 y_pred = (y_pred_proba > 0.5).astype(int)
 test_accuracy = accuracy_score(y_test, y_pred)
+
+# Relatório completo
+classification_report(y_test, y_pred,
+                     target_names=['Negativo', 'Positivo'])
 ```
+
+### Vantagens dos Embeddings Pré-treinados:
+
+- **Convergência mais rápida** que treinar do zero
+- **Melhor generalização** com vocabulário limitado
+- **Conhecimento semântico** transferido
 
 ---
 
@@ -233,11 +246,14 @@ test_accuracy = accuracy_score(y_test, y_pred)
 
 ![image:width:80%](output2.png)
 
-**Análise dos erros:**
+**Análise dos resultados:**
 
-- **Falsos Positivos**: Textos neutros classificados como positivos
-- **Falsos Negativos**: Ironia/sarcasmo classificados incorretamente
-- **Desafios**: Contexto implícito, linguagem informal
+- **Distribuição balanceada**: Modelo não favorece uma classe
+- **Principais erros**: Textos neutros/ambíguos
+- **Desafios identificados**:
+  - Ironia e sarcasmo
+  - Linguagem informal de redes sociais
+  - Contexto implícito
 
 ---
 
@@ -245,7 +261,7 @@ test_accuracy = accuracy_score(y_test, y_pred)
 
 ![image:width:80%](output3.png)
 
-📊 **Análise das probabilidades:**
+**Análise das probabilidades:**
 
 - **Bimodal**: Maioria das predições próximas a 0 ou 1
 - **Confiança alta**: Modelo é "decidido" na maioria dos casos
@@ -271,82 +287,40 @@ def predict_sentiment(text, model, tokenizer):
     sequence = tokenizer.texts_to_sequences([cleaned_text])
     padded = pad_sequences(sequence, maxlen=MAX_SEQUENCE_LENGTH)
     prediction = model.predict(padded)[0][0]
+
     return prediction, "Positivo" if prediction >= 0.5 else "Negativo"
 ```
 
----
+### Características das Predições:
 
-## Como o Modelo "Entende" Texto
-
-🔍 **Processo interno:**
-
-### 1. Embedding Layer:
-
-- **"love"** → **[0.12, -0.45, 0.78, ...]** (100 dimensões)
-- Palavras similares têm vetores próximos
-
-### 2. LSTM Bidirecional:
-
-- **Forward**: "i" → "love" → "this" → "movie"
-- **Backward**: "movie" → "this" → "love" → "i"
-- Combina contexto de ambas as direções
-
-### 3. Dense Layers:
-
-- Mapeia representação LSTM → probabilidade final
-- Dropout previne decorar exemplos específicos
-
----
-
-## Principais Aprendizados
-
-🎓 **Insights técnicos:**
-
-### Sobre LSTMs:
-
-- **Memória seletiva**: Esquece informação irrelevante
-- **Bidirectional**: Crucial para entender contexto completo
-- **Dropout**: Essencial para generalização
-
-### Sobre Dados:
-
-- **Pré-processamento** é fundamental para qualidade
-- **Vocabulário limitado** funciona bem
-- **Sequências padronizadas** facilitam processamento
-
-### Sobre Treinamento:
-
-- **Early stopping** previne overfitting
-- **Learning rate scheduling** melhora convergência
-- **Validation split** monitora generalização
-
----
-
-## Limitações e Desafios
-
-⚠️ **Pontos de atenção:**
-
-### Limitações do modelo:
-
-- **Ironia e sarcasmo**: Difícil de detectar
-- **Contexto cultural**: Expressões idiomáticas
-- **Textos curtos**: Pouco contexto disponível
-- **Emojis**: Removidos no pré-processamento
-
----
+- **Alta confiança** na maioria dos casos
+- **Bom desempenho** em textos claros
+- **Desafios** com ambiguidade e ironia
 
 ## Conclusões
 
-✅ **Objetivos alcançados:**
+**Principais Descobertas:**
 
-- 🎯 **Classificação eficaz** de sentimentos em tweets
-- 📈 **Accuracy de 83-85%** competitiva para a tarefa
-- 🧠 **LSTM bidirecional** capturou dependências sequenciais
+### Arquitetura:
+
+- **GRU Bidirecional**: Eficaz para análise de sentimentos
+- **Duas camadas**: Melhor abstração sequencial
+- **GlobalAveragePooling**: Superior à concatenação simples
+
+### Embeddings Pré-treinados:
+
+- **GloVe**: Vantagem significativa sobre embeddings treináveis
+- **Fine-tuning**: Estratégia em duas fases foi eficaz
+- **Transfer Learning**: Conhecimento semântico aproveitado
+
+### Resultados:
+
+- **~80% accuracy**: Performance satisfatória para tweets
+- **Convergência rápida**: ~15 épocas total
+- **Generalização**: Boa performance em textos novos
 
 ---
 
 # Obrigado!
-
-## Perguntas?
 
 ---

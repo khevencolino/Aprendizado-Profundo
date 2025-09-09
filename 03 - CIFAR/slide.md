@@ -6,7 +6,7 @@ date: 2025
 options:
   end_slide_shorthand: true
 theme:
-  name: gruvbox-dark
+  name: catppuccin-latte
 ---
 
 # CNN para Classificação CIFAR-10
@@ -17,7 +17,7 @@ theme:
 
 ## Objetivo
 
-🎯 **Classificar imagens em 10 categorias diferentes**
+**Classificar imagens em 10 categorias diferentes**
 
 - Dataset: CIFAR-10 com 60.000 imagens
 - Resolução: 32x32 pixels
@@ -28,7 +28,7 @@ theme:
 
 ## Dataset CIFAR-10
 
-📊 **Características dos dados:**
+**Características dos dados:**
 
 - **60.000 imagens totais**: 50.000 treino + 10.000 teste
 - **10 classes balanceadas**: 5.000 imagens por classe no treino
@@ -56,7 +56,7 @@ print(f"Teste: {x_test.shape}")    # (10000, 32, 32, 3)
 
 ## Pré-processamento
 
-🔧 **Preparação dos dados:**
+**Preparação dos dados:**
 
 ```python
 # Normalização: pixels para valores 0-1
@@ -68,15 +68,15 @@ y_train_categorical = to_categorical(y_train, 10)
 y_test_categorical = to_categorical(y_test, 10)
 ```
 
-- ✅ Normalização de pixels [0-255] → [0-1]
-- ✅ Conversão de rótulos para formato categórico
-- ✅ Dados prontos para treinamento da CNN
+- Normalização de pixels [0-255] → [0-1]
+- Conversão de rótulos para formato categórico
+- Dados prontos para treinamento da CNN
 
 ---
 
 ## Arquitetura da CNN
 
-🏗️ **Modelo Sequential com 3 blocos convolucionais:**
+**Modelo Sequential com 3 blocos convolucionais:**
 
 ```python
 def create_cnn_model():
@@ -114,7 +114,7 @@ def create_cnn_model():
 
 ## Detalhes da Arquitetura
 
-📐 **Estrutura hierárquica:**
+**Estrutura hierárquica:**
 
 | Camada    | Filtros/Neurônios | Ativação | Função                  |
 | --------- | ----------------- | -------- | ----------------------- |
@@ -134,7 +134,7 @@ def create_cnn_model():
 
 ## Configuração do Treinamento
 
-⚙️ **Hiperparâmetros e callbacks:**
+**Hiperparâmetros e callbacks:**
 
 ```python
 # Compilação do modelo
@@ -168,7 +168,7 @@ history = model.fit(
 
 ![image:width:80%](output3.png)
 
-📈 **Análise do treinamento:**
+**Análise do treinamento:**
 
 - Convergência estável sem overfitting significativo
 - Early stopping preveniu treinamento desnecessário
@@ -178,7 +178,7 @@ history = model.fit(
 
 ## Resultados Principais
 
-🏆 **Métricas de performance:**
+**Métricas de performance:**
 
 | Métrica        | Treinamento | Validação/Teste |
 | -------------- | ----------- | --------------- |
@@ -210,7 +210,7 @@ print(f"Total de parâmetros: {model.count_params():,}")
 
 ## Análise por Classe
 
-📊 **Métricas detalhadas:**
+**Métricas detalhadas:**
 
 | Classe     | Precisão | Recall | F1-Score |
 | ---------- | -------- | ------ | -------- |
@@ -240,29 +240,6 @@ print(f"Total de parâmetros: {model.count_params():,}")
 
 ---
 
-## Principais Aprendizados
-
-🎓 **Insights técnicos:**
-
-- **CNNs são eficazes** para classificação de imagens mesmo em baixa resolução
-- **Hierarquia de features:** filtros detectam desde bordas até objetos complexos
-- **Regularização é crucial:** BatchNorm + Dropout previnem overfitting
-- **Transfer learning** seria uma abordagem alternativa interessante
-
----
-
-## Conclusões
-
-✅ **Objetivos alcançados:**
-
-- 🎯 **Classificação eficaz** em 10 classes do CIFAR-10
-- 📈 **Acurácia de ~80-85%** competitiva para o dataset
-- 🏗️ **Arquitetura CNN robusta** com regularização adequada
-
----
-
-# Obrigado!
-
-🚀 **Próximo projeto:** Fashion-MNIST com Autoencoders
+**Próximo projeto:** Fashion-MNIST com Autoencoders
 
 ---

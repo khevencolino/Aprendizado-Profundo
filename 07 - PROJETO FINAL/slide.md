@@ -1,5 +1,5 @@
 ---
-title: Detecção de Idade e Gênero com Deep Learning
+title: Detecção de Idade e Sexo com Deep Learning
 sub_title: Projeto Final - Redes Neurais Convolucionais
 author: Kheven
 options:
@@ -10,14 +10,14 @@ theme:
 
 ## Visão Geral do Projeto
 
-**Objetivo**: Desenvolver um modelo de Deep Learning capaz de predizer simultaneamente a idade e o gênero de pessoas a partir de imagens faciais.
+**Objetivo**: Desenvolver um modelo de Deep Learning capaz de predizer simultaneamente a idade e o Sexo de pessoas a partir de imagens faciais.
 
 **Dataset**: UTKFace
 https://susanqq.github.io/UTKFace/
 
 - Mais de 20.000 imagens faciais
-- Estrutura: `[idade]_[gênero]_[etnia]_[data].jpg`
-- Gênero: 0 = Masculino, 1 = Feminino
+- Estrutura: `[idade]_[sexo]_[etnia]_[data].jpg`
+- Sexo: 0 = Masculino, 1 = Feminino
 - Idade: 0 a 116 anos
 
 ![image:width:100%](sample.png)
@@ -42,7 +42,7 @@ Age Head   Gender Head
 **Duas cabeças de saída**:
 
 - **Idade**: Regressão (MSE Loss)
-- **Gênero**: Classificação binária (CrossEntropy Loss)
+- **Sexo**: Classificação binária (CrossEntropy Loss)
 
 ---
 
@@ -89,7 +89,7 @@ nn.Sequential(
 
 ---
 
-## Cabeça de Gênero (Classificação)
+## Cabeça de Sexo (Classificação)
 
 ```python
 nn.Sequential(
@@ -118,14 +118,14 @@ nn.Sequential(
 
 2. **Treinamento**
 
-   - Forward pass: predições de idade e gênero
-   - Loss total = Loss_idade + Loss_gênero
+   - Forward pass: predições de idade e Sexo
+   - Loss total = Loss_idade + Loss_Sexo
    - Backward pass e otimização
 
 3. **Validação**
 
    - MAE para idade
-   - Acurácia para gênero
+   - Acurácia para Sexo
 
 4. **Checkpoint**
    - Salva melhor modelo baseado em validation loss
@@ -156,7 +156,7 @@ loss_total = loss_age + loss_gender
   - Mais interpretável
   - Objetivo: MAE < 7 anos
 
-### Gênero
+### Sexo
 
 - **CrossEntropy Loss**: Penaliza predições incorretas
 - **Acurácia**: Porcentagem de acertos
@@ -187,7 +187,7 @@ class UTKFaceDataset(Dataset):
         img_path = self.image_paths[idx]
         filename = os.path.basename(img_path)
 
-        # Parse: [idade]_[gênero]_[etnia]_[data].jpg
+        # Parse: [idade]_[Sexo]_[etnia]_[data].jpg
         parts = filename.split('_')
         age = int(parts[0])
         gender = int(parts[1])
@@ -230,7 +230,7 @@ class AgeGenderNet(nn.Module):
 def visualize_predictions(model, dataloader, num_images=8):
     # Exibe predições vs valores reais
     # - Idade predita vs idade real
-    # - Gênero predito vs gênero real
+    # - Sexo predito vs Sexo real
     # - Visualização da imagem original
 ```
 

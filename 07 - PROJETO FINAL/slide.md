@@ -2,6 +2,10 @@
 title: Detecção de Idade e Gênero com Deep Learning
 sub_title: Projeto Final - Redes Neurais Convolucionais
 author: Kheven
+options:
+  end_slide_shorthand: true
+theme:
+  name: light
 ---
 
 ## Visão Geral do Projeto
@@ -9,11 +13,14 @@ author: Kheven
 **Objetivo**: Desenvolver um modelo de Deep Learning capaz de predizer simultaneamente a idade e o gênero de pessoas a partir de imagens faciais.
 
 **Dataset**: UTKFace
+https://susanqq.github.io/UTKFace/
 
 - Mais de 20.000 imagens faciais
 - Estrutura: `[idade]_[gênero]_[etnia]_[data].jpg`
 - Gênero: 0 = Masculino, 1 = Feminino
 - Idade: 0 a 116 anos
+
+![image:width:100%](sample.png)
 
 ---
 
@@ -279,6 +286,22 @@ age, gender, conf = test_on_local_image(
    ↓
 7. Teste em Imagens Novas
 ```
+
+---
+
+## Exemplos
+
+<!-- column_layout: [2, 1] -->
+
+<!-- column: 0 -->
+
+![image:width:50%](pope_pred.png)
+
+<!-- column: 1 -->
+
+![image:width:50%](cristiano_pred.png)
+
+![image:width:50%](emma_pred.png)
 
 ---
 
